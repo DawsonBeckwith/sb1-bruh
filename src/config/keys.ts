@@ -1,0 +1,5 @@
+export const XAI_API_KEY = 'xai-bWqaKh3QdAWd5wot5gH8SzHwj9728BNVkHy6g9f7DI1vIiF4PAaixxjQbqjPF8zJWJIegzfoT7TxVtFC';
+export const ODDS_API_KEY = '140fe495f88d2d8126a42c9553ab8ba2';
+export const POLYGON_API_KEY = '201d05f9-49a4-4480-a2cb-dc8ebfb317d9';
+export const THENTY_SECRET = 'UF5Ut.H.H1!VLNd2AHZz83jqW=B3DRnb5eT5O8Ws3n4OQAG=XBhKqRxdxMGLZXMDBwxl2FWIpzsEDUernVskyLVHsOb55LI.5SD!ok!PJSCkoNn=Myrs4kgH4tnQTCZ4Nxh1hFMWRPb=GX54EnzPFp';
+export const THENTY_SITE_ID = '7LOdFbNDuZrVNt.d40STTO4JbmOgZDkoR9v2qCFTQm8!Y8SDwDgik9zg3BANPGevPnaYeYijTR4mATRtvw=m79Drw=WmjihdGxNE';

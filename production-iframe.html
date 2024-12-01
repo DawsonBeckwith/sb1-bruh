@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prediction Interface</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .prediction-frame {
+            width: 100%;
+            height: 100vh;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <iframe 
+        id="predictionFrame"
+        class="prediction-frame"
+        src="https://provisionpicks.com/predictions"
+        allow="clipboard-write; encrypted-media"
+        allowfullscreen
+        referrerpolicy="strict-origin"
+        loading="eager"
+        importance="high"
+    ></iframe>
+
+    <script>
+        const frame = document.getElementById('predictionFrame');
+        
+        // Initialize Thenty user data
+        window.thentyUser = {
+            id: window.Thenty?.user?.id,
+            username: window.Thenty?.user?.username,
+            thentyId: window.Thenty?.user?.thentyId,
+            authKey: window.Thenty?.token
+        };
+
+        // Listen for messages from prediction app
+        window.addEventListener('message', (event) => {
+            const allowedOrigins = [
+                'https://provisionpicks.com',
+                'https://www.provisionpicks.com'
+            ];
+            
+            if (!allowedOrigins.includes(event.origin)) return;
+            
+            // Handle auth requests
+            if (event.data?.type === 'REQUEST_AUTH') {
+                const authData = {
+                    type: 'THENTY_AUTH',
+                    userId: window.thentyUser?.id,
+                    username: window.thentyUser?.username,
+                    thentyId: window.thentyUser?.thentyId,
+                    authKey: window.thentyUser?.authKey
+                };
+                
+                frame.contentWindow.postMessage(authData, '*');
+            }
+            
+            // Handle Stripe redirects
+            if (event.data?.type === 'STRIPE_REDIRECT') {
+                window.location.href = event.data.url;
+            }
+        });
+
+        // Update auth on Thenty changes
+        window.Thenty?.on('auth', (user) => {
+            window.thentyUser = {
+                id: user?.id,
+                username: user?.username,
+                thentyId: user?.thentyId,
+                authKey: window.Thenty?.token
+            };
+            
+            // Notify prediction app of auth change
+            frame.contentWindow.postMessage({
+                type: 'THENTY_AUTH',
+                ...window.thentyUser
+            }, '*');
+        });
+    </script>
+</body>
+</html>

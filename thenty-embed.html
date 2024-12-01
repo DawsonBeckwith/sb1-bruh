@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Interface</title>
+    <script src="https://cdn.thenty.io/beta/thenty.min.js" 
+        data-secret="UF5Ut.H.H1!VLNd2AHZz83jqW=B3DRnb5eT5O8Ws3n4OQAG=XBhKqRxdxMGLZXMDBwxl2FWIpzsEDUernVskyLVHsOb55LI.5SD!ok!PJSCkoNn=Myrs4kgH4tnQTCZ4Nxh1hFMWRPb=GX54EnzPFp"
+        data-site="7LOdFbNDuZrVNt.d40STTO4JbmOgZDkoR9v2qCFTQm8!Y8SDwDgik9zg3BANPGevPnaYeYijTR4mATRtvw=m79Drw=WmjihdGxNE">
+    </script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .prediction-frame {
+            width: 100%;
+            height: 100vh;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <iframe 
+        id="predictionFrame"
+        class="prediction-frame"
+        allow="clipboard-write; encrypted-media"
+        allowfullscreen
+        referrerpolicy="strict-origin"
+        loading="eager"
+        importance="high"
+    ></iframe>
+
+    <script>
+        const frame = document.getElementById('predictionFrame');
+        
+        // Initialize Thenty user data
+        window.thentyUser = {
+            id: window.Thenty?.user?.id,
+            username: window.Thenty?.user?.username,
+            thentyId: window.Thenty?.user?.thentyId,
+            authKey: window.Thenty?.token
+        };
+
+        // Listen for messages from prediction app
+        window.addEventListener('message', (event) => {
+            const allowedOrigins = [
+                'https://predictions.provisionpicks.com',
+                'http://localhost:5173'
+            ];
+            
+            if (!allowedOrigins.includes(event.origin)) return;
+            
+            // Handle auth requests
+            if (event.data?.type === 'REQUEST_AUTH') {
+                const authData = {
+                    type: 'THENTY_AUTH',
+                    userId: window.thentyUser?.id,
+                    username: window.thentyUser?.username,
+                    thentyId: window.thentyUser?.thentyId,
+                    authKey: window.thentyUser?.authKey
+                };
+                
+                frame.contentWindow.postMessage(authData, '*');
+            }
+            
+            // Handle Stripe redirects
+            if (event.data?.type === 'STRIPE_REDIRECT') {
+                window.location.href = event.data.url;
+            }
+        });
+
+        // Update auth on Thenty changes
+        window.Thenty?.on('auth', (user) => {
+            window.thentyUser = {
+                id: user?.id,
+                username: user?.username,
+                thentyId: user?.thentyId,
+                authKey: window.Thenty?.token
+            };
+            
+            // Notify prediction app of auth change
+            frame.contentWindow.postMessage({
+                type: 'THENTY_AUTH',
+                ...window.thentyUser
+            }, '*');
+        });
+
+        // Set iframe source
+        frame.src = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5173'
+            : 'https://predictions.provisionpicks.com';
+    </script>
+</body>
+</html>

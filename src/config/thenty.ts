@@ -1,0 +1,4 @@
+export const THENTY_CONFIG = {
+  secretKey: 'UF5Ut.H.H1!VLNd2AHZz83jqW=B3DRnb5eT5O8Ws3n4OQAG=XBhKqRxdxMGLZXMDBwxl2FWIpzsEDUernVskyLVHsOb55LI.5SD!ok!PJSCkoNn=Myrs4kgH4tnQTCZ4Nxh1hFMWRPb=GX54EnzPFp',
+  siteId: '7LOdFbNDuZrVNt.d40STTO4JbmOgZDkoR9v2qCFTQm8!Y8SDwDgik9zg3BANPGevPnaYeYijTR4mATRtvw=m79Drw=WmjihdGxNE'
+};

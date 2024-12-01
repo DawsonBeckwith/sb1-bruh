@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prediction Interface</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .prediction-frame {
+            width: 100%;
+            height: 100vh;
+            border: none;
+            margin: 0;
+            padding: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <iframe 
+        id="predictionFrame"
+        class="prediction-frame"
+        allow="clipboard-write; encrypted-media"
+        allowfullscreen
+        referrerpolicy="strict-origin"
+        loading="eager"
+        importance="high"
+    ></iframe>
+
+    <script>
+        // Initialize iframe with authentication
+        const frame = document.getElementById('predictionFrame');
+        
+        // Listen for messages from the prediction app
+        window.addEventListener('message', (event) => {
+            // Verify origin matches your deployment URL
+            const allowedOrigins = [
+                'https://provisionpicks.com',
+                'https://www.provisionpicks.com',
+                window.location.origin // Allow development origin
+            ];
+            
+            if (!allowedOrigins.includes(event.origin)) return;
+            
+            // Handle auth requests
+            if (event.data?.type === 'REQUEST_AUTH') {
+                // Get auth data from Thenty
+                const authData = {
+                    type: 'THENTY_AUTH',
+                    userId: window.thentyUser?.id,
+                    username: window.thentyUser?.username,
+                    thentyId: window.thentyUser?.thentyId,
+                    authKey: window.thentyUser?.authKey
+                };
+                
+                frame.contentWindow.postMessage(authData, '*');
+            }
+            
+            // Handle Stripe redirects
+            if (event.data?.type === 'STRIPE_REDIRECT') {
+                window.location.href = event.data.url;
+            }
+        });
+
+        // Set iframe source after listeners are ready
+        frame.src = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5173'
+            : 'https://predictions.provisionpicks.com';
+    </script>
+
+    <!-- Thenty SDK -->
+    <script src="https://cdn.thenty.io/beta/thenty-sdk.min.js"></script>
+</body>
+</html>
